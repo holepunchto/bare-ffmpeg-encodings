@@ -1,10 +1,10 @@
 # bare-ffmpeg-encodings
 
-provides hyperschema for serializable [`bare-ffmpeg`](/holepunchto/bare-ffmpeg) types.
+Hyperschema for serializable [`bare-ffmpeg`](/holepunchto/bare-ffmpeg) types.
 
 ## Use
 
-```bash
+```console
 npm i --save-dev bare-ffmpeg-encodings
 ```
 
@@ -20,10 +20,10 @@ const template = schema.namespace('my-namespace')
 template.register({
     name: 'my-type',
     fields: [
-        { name: 'rational, type: '@ffmpeg/rational },
+        { name: 'rational, type: '@ffmpeg/rational' },
         { name: 'streams', type: '@ffmpeg/stream' },
         { name: 'packets', type: '@ffmpeg/packet' },
-        { name: 'parameters', type: '@ffmpeg/codecparameters }
+        { name: 'parameters', type: '@ffmpeg/codecparameters' }
     ]
 })
 
