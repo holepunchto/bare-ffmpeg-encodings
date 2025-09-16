@@ -1,6 +1,6 @@
 {
   "name": "bare-ffmpeg-encodings",
-  "version": "0.0.0-1",
+  "version": "0.0.0",
   "description": "Serialize ffmpeg primitives",
   "type": "module",
   "main": "./index.js",
