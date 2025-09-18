@@ -22,8 +22,9 @@ export function postdecodePacket (obj, dst = new ffmpeg.Packet()) {
   dst.pts = obj.pts
   dst.duration = obj.duration
   dst.flags = obj.flags
-  if (obj.sideData && obj.sideData.length) {
-    dst.sideData = obj.sideData
+  const sideData = obj.sideData
+  if (sideData && sideData.length) {
+    dst.sideData = sideData
   }
   return dst
 }
@@ -96,7 +97,8 @@ export function postdecodeCodecParameters (obj, dst = ffmpeg.CodecParameters.all
   dst.tag = obj.tag
   dst.type = obj.type
   dst.format = obj.format
-  dst.extraData = obj.extraData
+  const extraData = obj.extraData
+  if (extraData) dst.extraData = extraData
 
   switch (obj.type) {
     case mediaTypes.AUDIO:
