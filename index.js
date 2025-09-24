@@ -139,13 +139,16 @@ export function preencodeStream (stream) {
 }
 
 /** @param {ffmpeg.Stream} dst */
-export function postdecodeStream (obj, dst) {
+export function postdecodeStream (obj, dst, updateStreamIndex = true) {
   // `bare-ffmpeg@v1.0.0-26` does not support
-  // standalone stream initialization.
+  // standalone stream initialization. (for good reason)
   dst ||= {}
 
   dst.id = obj.id
-  dst.index = obj.index
+
+  // conditionally set streamIndex - due to above
+  if (updateStreamIndex) dst.index = obj.index
+
   dst.timeBase = postdecodeRational(obj.timeBase)
   dst.avgFramerate = postdecodeRational(obj.avgFramerate)
 
@@ -156,4 +159,12 @@ export function postdecodeStream (obj, dst) {
   }
 
   return dst
+}
+
+export function copyStreamProperties (src, dst, updateStreamIndex = true) {
+  postdecodeStream(
+    preencodeStream(src),
+    dst,
+    updateStreamIndex
+  )
 }

@@ -6,7 +6,7 @@
   "main": "./index.js",
   "devDependencies": {
     "bare-ffmpeg": "^1.0.0-26",
-    "brittle": "^3.18.6"
+    "brittle": "^3.19.0"
   },
   "scripts": {
     "test": "bare test.js"
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/holepunchto/bare-ffmpeg-encodings",
   "dependencies": {
-    "hyperschema": "^1.14.0"
+    "hyperschema": "^1.15.0"
   }
 }

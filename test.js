@@ -8,7 +8,8 @@ import {
   preencodeCodecParameters,
   postdecodeCodecParameters,
   preencodeStream,
-  postdecodeStream
+  postdecodeStream,
+  copyStreamProperties
 } from './index.js'
 import { readFileSync } from 'bare-fs'
 
@@ -95,31 +96,6 @@ test('codecParameters', async t => {
     b.destroy()
   }
 
-  function validateCodecParameters (t, a, b) {
-    t.is(a.id, b.id, 'id')
-    t.is(a.format, b.format, 'format')
-    t.is(a.tag, b.tag, 'tag')
-    t.alike(a.frameRate, b.frameRate, 'frameRate')
-    t.is(a.videoDelay, b.videoDelay, 'videoDelay')
-    t.is(a.profile, b.profile, 'profile')
-    t.is(a.level, b.level, 'level')
-    t.is(a.width, b.width, 'width')
-    t.is(a.height, b.height, 'height')
-    t.alike(a.sampleAsectRatio, b.sampleAsectRatio, 'sampleAsectRatio')
-    t.is(a.bitRate, b.bitRate, 'bitRate')
-    t.is(a.bitsPerCodedSample, b.bitsPerCodedSample, 'bitsPerCodedSample')
-    t.is(a.bitsPerRawSample, b.bitsPerRawSample, 'bitsPerRawSample')
-    t.is(a.sampleRate, b.sampleRate, 'sampleRate')
-    t.is(a.nbChannels, b.nbChannels, 'nbChannels')
-    t.is(a.channelLayout?.nbChannels, b.channelLayout?.nbChannels, 'channelLayout.nbChannels')
-    t.ok(a.extraData.equals(b.extraData), 'extraData')
-    t.is(a.blockAlign, b.blockAlign, 'blockAlign')
-    t.is(a.initialPadding, b.initialPadding, 'initialPadding')
-    t.is(a.trailingPadding, b.trailingPadding, 'trailingPadding')
-    t.is(a.seekPreroll, b.seekPreroll, 'seekPreroll')
-    t.is(a.frameSize, b.frameSize, 'frameSize')
-  }
-
   format.destroy()
 })
 
@@ -146,3 +122,57 @@ test('stream', async t => {
 
   format.destroy()
 })
+
+test('copyStreamProperties(source, target)', async t => {
+  const format = openFixture()
+  const io = new ffmpeg.IOContext(Buffer.from(4096), {
+    onwrite: () => { /* noop */ }
+  })
+  const outputFormat = new ffmpeg.OutputFormatContext('webm', io)
+
+  for (const stream of format.streams) {
+    /** @type {ffmpeg.Stream} */
+    const a = stream
+    const b = outputFormat.createStream()
+
+    copyStreamProperties(a, b, false)
+
+    validateStream(t, a, b)
+  }
+
+  function validateStream (t, a, b) {
+    t.is(a.id, b.id, 'id')
+    t.is(a.index, b.index, 'index')
+    t.alike(a.timeBase, b.timeBase, 'timeBase')
+    t.alike(a.avgFramerate, b.avgFramerate, 'avgFramerate')
+    validateCodecParameters(t, a.codecParameters, b.codecParameters)
+  }
+
+  format.destroy()
+  outputFormat.destroy()
+})
+
+function validateCodecParameters (t, a, b) {
+  t.is(a.id, b.id, 'id')
+  t.is(a.format, b.format, 'format')
+  t.is(a.tag, b.tag, 'tag')
+  t.alike(a.frameRate, b.frameRate, 'frameRate')
+  t.is(a.videoDelay, b.videoDelay, 'videoDelay')
+  t.is(a.profile, b.profile, 'profile')
+  t.is(a.level, b.level, 'level')
+  t.is(a.width, b.width, 'width')
+  t.is(a.height, b.height, 'height')
+  t.alike(a.sampleAsectRatio, b.sampleAsectRatio, 'sampleAsectRatio')
+  t.is(a.bitRate, b.bitRate, 'bitRate')
+  t.is(a.bitsPerCodedSample, b.bitsPerCodedSample, 'bitsPerCodedSample')
+  t.is(a.bitsPerRawSample, b.bitsPerRawSample, 'bitsPerRawSample')
+  t.is(a.sampleRate, b.sampleRate, 'sampleRate')
+  t.is(a.nbChannels, b.nbChannels, 'nbChannels')
+  t.is(a.channelLayout?.nbChannels, b.channelLayout?.nbChannels, 'channelLayout.nbChannels')
+  t.ok(a.extraData.equals(b.extraData), 'extraData')
+  t.is(a.blockAlign, b.blockAlign, 'blockAlign')
+  t.is(a.initialPadding, b.initialPadding, 'initialPadding')
+  t.is(a.trailingPadding, b.trailingPadding, 'trailingPadding')
+  t.is(a.seekPreroll, b.seekPreroll, 'seekPreroll')
+  t.is(a.frameSize, b.frameSize, 'frameSize')
+}
