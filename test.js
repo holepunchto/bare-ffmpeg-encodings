@@ -14,7 +14,7 @@ import {
 import { readFileSync } from 'bare-fs'
 
 let _cache
-async function testSchema () {
+async function testSchema() {
   if (_cache) return _cache
 
   const testSchema = Hyperschema.from('./spec')
@@ -25,12 +25,12 @@ async function testSchema () {
   return _cache
 }
 
-function openFixture () {
+function openFixture() {
   const data = readFileSync('./fixture.webm')
   return new ffmpeg.InputFormatContext(new ffmpeg.IOContext(data))
 }
 
-test('packet', async t => {
+test('packet', async (t) => {
   const { encode, decode } = await testSchema()
 
   const format = openFixture()
@@ -48,7 +48,7 @@ test('packet', async t => {
     validatePacket(t, a, b)
   }
 
-  function validatePacket (t, a, b) {
+  function validatePacket(t, a, b) {
     t.is(a.dts, b.dts, 'dts')
     t.is(a.pts, b.pts, 'pts')
     t.is(a.streamIndex, b.streamIndex, 'streamIndex')
@@ -76,7 +76,7 @@ test('packet', async t => {
   t.ok(nBytes > 0, `validated bytes: ${nBytes}`)
 })
 
-test('codecParameters', async t => {
+test('codecParameters', async (t) => {
   const { encode, decode } = await testSchema()
   const format = openFixture()
 
@@ -99,7 +99,7 @@ test('codecParameters', async t => {
   format.destroy()
 })
 
-test('stream', async t => {
+test('stream', async (t) => {
   const { encode, decode } = await testSchema()
   const format = openFixture()
 
@@ -113,7 +113,7 @@ test('stream', async t => {
     validateStream(t, a, b)
   }
 
-  function validateStream (t, a, b) {
+  function validateStream(t, a, b) {
     t.is(a.id, b.id, 'id')
     t.is(a.index, b.index, 'index')
     t.alike(a.timeBase, b.timeBase, 'timeBase')
@@ -123,10 +123,12 @@ test('stream', async t => {
   format.destroy()
 })
 
-test('copyStreamProperties(source, target)', async t => {
+test('copyStreamProperties(source, target)', async (t) => {
   const format = openFixture()
   const io = new ffmpeg.IOContext(Buffer.from(4096), {
-    onwrite: () => { /* noop */ }
+    onwrite: () => {
+      /* noop */
+    }
   })
   const outputFormat = new ffmpeg.OutputFormatContext('webm', io)
 
@@ -140,7 +142,7 @@ test('copyStreamProperties(source, target)', async t => {
     validateStream(t, a, b)
   }
 
-  function validateStream (t, a, b) {
+  function validateStream(t, a, b) {
     t.is(a.id, b.id, 'id')
     t.is(a.index, b.index, 'index')
     t.alike(a.timeBase, b.timeBase, 'timeBase')
@@ -152,7 +154,7 @@ test('copyStreamProperties(source, target)', async t => {
   outputFormat.destroy()
 })
 
-function validateCodecParameters (t, a, b) {
+function validateCodecParameters(t, a, b) {
   t.is(a.id, b.id, 'id')
   t.is(a.format, b.format, 'format')
   t.is(a.tag, b.tag, 'tag')

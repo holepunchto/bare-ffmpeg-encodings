@@ -3,19 +3,19 @@ export { registerEncodings } from './schema.js'
 const { mediaTypes } = ffmpeg.constants
 
 /** @param {ffmpeg.Packet} packet */
-export function preencodePacket (packet) {
+export function preencodePacket(packet) {
   return {
     streamIndex: packet.streamIndex,
     dts: packet.dts,
     pts: packet.pts,
     duration: packet.duration,
     flags: packet.flags,
-    sideData: packet.sideData.map(sd => ({ type: sd.type, data: sd.data })),
+    sideData: packet.sideData.map((sd) => ({ type: sd.type, data: sd.data })),
     data: packet.data
   }
 }
 
-export function postdecodePacket (obj, dst = new ffmpeg.Packet()) {
+export function postdecodePacket(obj, dst = new ffmpeg.Packet()) {
   dst.data = obj.data
   dst.streamIndex = obj.streamIndex
   dst.dts = obj.dts
@@ -30,21 +30,21 @@ export function postdecodePacket (obj, dst = new ffmpeg.Packet()) {
 }
 
 /** @param {ffmpeg.Rational} rational */
-export function preencodeRational (rational) {
+export function preencodeRational(rational) {
   return {
     numerator: rational.numerator,
     denominator: rational.denominator
   }
 }
 
-export function postdecodeRational (obj, dst = new ffmpeg.Rational()) {
+export function postdecodeRational(obj, dst = new ffmpeg.Rational()) {
   dst.numerator = obj.numerator
   dst.denominator = obj.denominator
   return dst
 }
 
 /** @param {ffmpeg.CodecParameters} codecParameters */
-export function preencodeCodecParameters (codecParameters) {
+export function preencodeCodecParameters(codecParameters) {
   const { type } = codecParameters
 
   const out = {
@@ -92,7 +92,7 @@ export function preencodeCodecParameters (codecParameters) {
   return out
 }
 
-export function postdecodeCodecParameters (obj, dst = ffmpeg.CodecParameters.alloc()) {
+export function postdecodeCodecParameters(obj, dst = ffmpeg.CodecParameters.alloc()) {
   dst.id = obj.id
   dst.tag = obj.tag
   dst.type = obj.type
@@ -128,7 +128,7 @@ export function postdecodeCodecParameters (obj, dst = ffmpeg.CodecParameters.all
 }
 
 /** @param {ffmpeg.Stream} stream */
-export function preencodeStream (stream) {
+export function preencodeStream(stream) {
   return {
     id: stream.id,
     index: stream.index,
@@ -139,7 +139,7 @@ export function preencodeStream (stream) {
 }
 
 /** @param {ffmpeg.Stream} dst */
-export function postdecodeStream (obj, dst, updateStreamIndex = true) {
+export function postdecodeStream(obj, dst, updateStreamIndex = true) {
   // `bare-ffmpeg@v1.0.0-26` does not support
   // standalone stream initialization. (for good reason)
   dst ||= {}
@@ -161,10 +161,6 @@ export function postdecodeStream (obj, dst, updateStreamIndex = true) {
   return dst
 }
 
-export function copyStreamProperties (src, dst, updateStreamIndex = true) {
-  postdecodeStream(
-    preencodeStream(src),
-    dst,
-    updateStreamIndex
-  )
+export function copyStreamProperties(src, dst, updateStreamIndex = true) {
+  postdecodeStream(preencodeStream(src), dst, updateStreamIndex)
 }

@@ -1,4 +1,4 @@
-export function registerEncodings (schema) {
+export function registerEncodings(schema) {
   const template = schema.namespace('ffmpeg')
   const compact = true
 
